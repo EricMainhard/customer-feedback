@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "51a489a9dec1b6b7fdd4996085b06dac"
+name = "customer-feedback"
+handle = "customer-feedback-6"
+application_url = "https://scales-aaa-statutory-integral.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "eric-uicheckout.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = ""
+
+[auth]
+redirect_urls = [
+  "https://scales-aaa-statutory-integral.trycloudflare.com/auth/callback",
+  "https://scales-aaa-statutory-integral.trycloudflare.com/auth/shopify/callback",
+  "https://scales-aaa-statutory-integral.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-07"
+
+[pos]
+embedded = false
