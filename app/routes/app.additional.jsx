@@ -8,9 +8,42 @@ import {
   Text,
   BlockStack,
 } from "@shopify/polaris";
+import { useLoaderData } from "@remix-run/react";
 import { TitleBar } from "@shopify/app-bridge-react";
 
+export const loader = async () => {
+  let response;
+  let feedbacks = [];
+
+  try {
+    response = await fetch('https://batman-cellular-receives-collective.trycloudflare.com/apps/customer-feedback');
+    feedbacks = await response.json();
+  } catch (error) {
+    console.error('Failed to load feedbacks', error);
+  }
+
+  return {
+    feedbacks
+  };
+}
+
+function FeedbackItem({ feedback }) {
+
+  console.log(feedback);
+
+  return (
+    <Box>
+      <Text>{feedback.firstName} {feedback.lastName}</Text>
+      <Text>{feedback.feedback}</Text>
+      <Text>{Date(feedback.createdAt)}</Text>
+    </Box>
+  )
+}
+
 export default function AdditionalPage() {
+
+  const { feedbacks } = useLoaderData();
+
   return (
     <Page>
       <TitleBar title="Additional page" />
@@ -18,25 +51,9 @@ export default function AdditionalPage() {
         <Layout.Section>
           <Card>
             <BlockStack gap="300">
-              <Text as="p" variant="bodyMd">
-                The app template comes with an additional page which
-                demonstrates how to create multiple pages within app navigation
-                using{" "}
-                <Link
-                  url="https://shopify.dev/docs/apps/tools/app-bridge"
-                  target="_blank"
-                  removeUnderline
-                >
-                  App Bridge
-                </Link>
-                .
-              </Text>
-              <Text as="p" variant="bodyMd">
-                To create your own page and have it show up in the app
-                navigation, add a page inside <Code>app/routes</Code>, and a
-                link to it in the <Code>&lt;NavMenu&gt;</Code> component found
-                in <Code>app/routes/app.jsx</Code>.
-              </Text>
+              {feedbacks.feedbacks.map(fb => (
+                <FeedbackItem key={fb.id} feedback={fb}/>
+              ))}
             </BlockStack>
           </Card>
         </Layout.Section>

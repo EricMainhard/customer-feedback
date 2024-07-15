@@ -129,7 +129,7 @@ function FeedbackForm() {
 
     try {
       setLoading(true);
-      response = await fetch('https://scales-aaa-statutory-integral.trycloudflare.com/apps/customer-feedback', {
+      response = await fetch(' https://batman-cellular-receives-collective.trycloudflare.com/apps/customer-feedback', {
         method: 'POST',
         headers: {
            'Content-Type': 'application/json',

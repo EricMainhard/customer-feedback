@@ -16,8 +16,6 @@ export const action = async ({ request }) => {
           },
     });
     
-    console.log(feedback);
-
     return json(
         { 
             firstName,
@@ -36,13 +34,14 @@ export const action = async ({ request }) => {
 };
 
 export const loader = async ({ request }) => {
+    const feedbacks = await prisma.feedback.findMany();
     return json(
-        { hello: "world" },
+        { feedbacks },
         {
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type',
-          },
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            },
         }
     );
 };
