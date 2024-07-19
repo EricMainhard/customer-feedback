@@ -3,7 +3,7 @@
 client_id = "51a489a9dec1b6b7fdd4996085b06dac"
 name = "customer-feedback"
 handle = "customer-feedback-6"
-application_url = "https://batman-cellular-receives-collective.trycloudflare.com"
+application_url = "https://respondents-attraction-epson-contractor.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,16 +17,16 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "https://batman-cellular-receives-collective.trycloudflare.com/auth/callback",
-  "https://batman-cellular-receives-collective.trycloudflare.com/auth/shopify/callback",
-  "https://batman-cellular-receives-collective.trycloudflare.com/api/auth/callback"
+  "https://respondents-attraction-epson-contractor.trycloudflare.com/auth/callback",
+  "https://respondents-attraction-epson-contractor.trycloudflare.com/auth/shopify/callback",
+  "https://respondents-attraction-epson-contractor.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
 
 [app_proxy]
-url = "https://batman-cellular-receives-collective.trycloudflare.com/apps/customer-feedback"
+url = "https://respondents-attraction-epson-contractor.trycloudflare.com/apps/customer-feedback"
 subpath = "customer-feedback"
 prefix = "apps"
 

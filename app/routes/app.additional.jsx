@@ -7,17 +7,20 @@ import {
   Page,
   Text,
   BlockStack,
+  DataTable
 } from "@shopify/polaris";
 import { useLoaderData } from "@remix-run/react";
 import { TitleBar } from "@shopify/app-bridge-react";
+import { useState, useCallback, useEffect } from "react";
 
 export const loader = async () => {
   let response;
   let feedbacks = [];
 
   try {
-    response = await fetch('https://batman-cellular-receives-collective.trycloudflare.com/apps/customer-feedback');
+    response = await fetch('https://respondents-attraction-epson-contractor.trycloudflare.com/apps/customer-feedback');
     feedbacks = await response.json();
+    console.log("Feedback data fetched successfully:", feedbacks);
   } catch (error) {
     console.error('Failed to load feedbacks', error);
   }
@@ -27,35 +30,74 @@ export const loader = async () => {
   };
 }
 
-function FeedbackItem({ feedback }) {
-
-  console.log(feedback);
-
-  return (
-    <Box>
-      <Text>{feedback.firstName} {feedback.lastName}</Text>
-      <Text>{feedback.feedback}</Text>
-      <Text>{Date(feedback.createdAt)}</Text>
-    </Box>
-  )
-}
-
 export default function AdditionalPage() {
 
   const { feedbacks } = useLoaderData();
+  const [sortedRows, setSortedRows] = useState([]);
+
+  useEffect(() => {
+    if (feedbacks && feedbacks.length > 0) {
+      const initiallySortedRows = feedbacks.map(fb => {
+        return [
+          fb.firstName,
+          fb.lastName,
+          fb.feedback,
+          fb.createdAt
+        ];
+      });
+      setSortedRows(initiallySortedRows);
+      console.log("Initial sorted rows set:", initiallySortedRows);
+    } else {
+      console.warn("No feedbacks available");
+    }
+  }, [feedbacks]);
+
+  const sortDates = (rows, index, direction) => {
+    rows.map(row => {
+      console.log('...', row[index]);
+    });
+    return [...rows].sort((rowA, rowB) => {
+      const dateA = new Date(rowA[index]);
+      const dateB = new Date(rowB[index]);
+
+      return direction === 'descending' ? dateB - dateA : dateA - dateB;
+    });
+  }
+    
+  const rows = sortedRows ? sortedRows : initiallySortedRows;
+
+  const handleSort = useCallback(
+    (index, direction) =>
+      setSortedRows(sortDates(rows, index, direction)),
+    [rows],
+  );
 
   return (
     <Page>
       <TitleBar title="Additional page" />
       <Layout>
         <Layout.Section>
-          <Card>
-            <BlockStack gap="300">
-              {feedbacks.feedbacks.map(fb => (
-                <FeedbackItem key={fb.id} feedback={fb}/>
-              ))}
-            </BlockStack>
-          </Card>
+          <DataTable
+            columnContentTypes={[
+              'text',
+              'text',
+              'text',
+              'text'
+            ]}
+            headings={[
+              'First name',
+              'Last name',
+              'Feedback',
+              'Date'
+            ]}
+            sortable={[false, false, false, true]}
+            rows={rows}
+            defaultSortDirection="descending"
+            onSort={handleSort}
+            initialSortColumnIndex={3}
+            footerContent={`Showing ${rows.length} of ${rows.length} results`}
+          >
+          </DataTable>
         </Layout.Section>
         <Layout.Section variant="oneThird">
           <Card>
@@ -79,22 +121,5 @@ export default function AdditionalPage() {
         </Layout.Section>
       </Layout>
     </Page>
-  );
-}
-
-function Code({ children }) {
-  return (
-    <Box
-      as="span"
-      padding="025"
-      paddingInlineStart="100"
-      paddingInlineEnd="100"
-      background="bg-surface-active"
-      borderWidth="025"
-      borderColor="border"
-      borderRadius="100"
-    >
-      <code>{children}</code>
-    </Box>
   );
 }

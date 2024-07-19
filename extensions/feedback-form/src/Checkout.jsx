@@ -31,13 +31,13 @@ function FeedbackForm() {
     }
   }, [handleSubmit]);
 
-  if (!isFormVisible) {
-    return (
-      <BlockStack inlineAlignment={"center"} padding={"base"} background={"subdued"} border={"base"} borderWidth={"medium"} borderRadius={"loose"}>
-        <Text appearance="success">Thank you for your feedback! A 10% discount has been applied to your order!</Text>
-      </BlockStack>
-    )
-  }
+  // if (!isFormVisible) {
+  //   return (
+  //     <BlockStack inlineAlignment={"center"} padding={"base"} background={"subdued"} border={"base"} borderWidth={"medium"} borderRadius={"loose"}>
+  //       <Text appearance="success">Thank you for your feedback! A 10% discount has been applied to your order!</Text>
+  //     </BlockStack>
+  //   )
+  // }
 
   return (
     <Form
@@ -129,7 +129,7 @@ function FeedbackForm() {
 
     try {
       setLoading(true);
-      response = await fetch(' https://batman-cellular-receives-collective.trycloudflare.com/apps/customer-feedback', {
+      response = await fetch('https://respondents-attraction-epson-contractor.trycloudflare.com/apps/customer-feedback', {
         method: 'POST',
         headers: {
            'Content-Type': 'application/json',
