@@ -1,5 +1,4 @@
 import {
-  Box,
   Card,
   Layout,
   Link,
@@ -7,8 +6,13 @@ import {
   Page,
   Text,
   BlockStack,
-  DataTable
+  useIndexResourceState,
+  IndexTable,
+  Badge,
+  useBreakpoints,
+  EmptySearchResult
 } from "@shopify/polaris";
+import { DeleteIcon } from '@shopify/polaris-icons';
 import { useLoaderData } from "@remix-run/react";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { useState, useCallback, useEffect } from "react";
@@ -18,9 +22,9 @@ export const loader = async () => {
   let feedbacks = [];
 
   try {
-    response = await fetch('https://respondents-attraction-epson-contractor.trycloudflare.com/apps/customer-feedback');
+    response = await fetch('https://billing-experienced-vt-domain.trycloudflare.com/apps/customer-feedback');
     feedbacks = await response.json();
-    console.log("Feedback data fetched successfully:", feedbacks);
+    feedbacks = feedbacks?.feedbacks
   } catch (error) {
     console.error('Failed to load feedbacks', error);
   }
@@ -33,71 +37,121 @@ export const loader = async () => {
 export default function AdditionalPage() {
 
   const { feedbacks } = useLoaderData();
-  const [sortedRows, setSortedRows] = useState([]);
 
-  useEffect(() => {
-    if (feedbacks && feedbacks.length > 0) {
-      const initiallySortedRows = feedbacks.map(fb => {
-        return [
-          fb.firstName,
-          fb.lastName,
-          fb.feedback,
-          fb.createdAt
-        ];
-      });
-      setSortedRows(initiallySortedRows);
-      console.log("Initial sorted rows set:", initiallySortedRows);
-    } else {
-      console.warn("No feedbacks available");
-    }
-  }, [feedbacks]);
+  const resourceName = {
+    singular: 'feedback',
+    plural: 'feedbacks',
+  };
 
-  const sortDates = (rows, index, direction) => {
-    rows.map(row => {
-      console.log('...', row[index]);
-    });
-    return [...rows].sort((rowA, rowB) => {
-      const dateA = new Date(rowA[index]);
-      const dateB = new Date(rowB[index]);
+  const {selectedResources, allResourcesSelected, handleSelectionChange} = 
+  useIndexResourceState(feedbacks);
 
-      return direction === 'descending' ? dateB - dateA : dateA - dateB;
-    });
-  }
-    
-  const rows = sortedRows ? sortedRows : initiallySortedRows;
-
-  const handleSort = useCallback(
-    (index, direction) =>
-      setSortedRows(sortDates(rows, index, direction)),
-    [rows],
+  const emptyStateMarkup = (
+    <EmptySearchResult
+      title={'No feedbacks yet'}
+      description={'Customers feddback will appear here'}
+      withIllustration
+    />
   );
+
+  const rowMarkup = feedbacks.map(
+    (
+      {id, firstName, lastName, feedback, createdAt},
+      index,
+    ) => (
+      <IndexTable.Row
+        id={id}
+        key={id}
+        selected={selectedResources.includes(id)}
+        position={index}
+      >
+        <IndexTable.Cell>
+          <Text variant="bodyMd" fontWeight="bold" as="span">
+            {firstName}
+          </Text>
+        </IndexTable.Cell>
+        <IndexTable.Cell>{lastName}</IndexTable.Cell>
+        <IndexTable.Cell>{feedback}</IndexTable.Cell>
+        <IndexTable.Cell>
+          <Text as="span" alignment="end" numeric>
+            {createdAt}
+          </Text>
+        </IndexTable.Cell>
+      </IndexTable.Row>
+    ),
+  );
+
+  const promotedBulkActions = [
+    {
+      content: 'Create shipping labels',
+      onAction: () => console.log('Todo: implement create shipping labels'),
+    },
+    {
+      content: 'Mark as fulfilled',
+      onAction: () => console.log('Todo: implement mark as fulfilled'),
+    },
+    {
+      content: 'Capture payment',
+      onAction: () => console.log('Todo: implement capture payment'),
+    },
+  ];
+  const bulkActions = [
+    {
+      content: 'Add tags',
+      onAction: () => console.log('Todo: implement bulk add tags'),
+    },
+    {
+      content: 'Remove tags',
+      onAction: () => console.log('Todo: implement bulk remove tags'),
+    },
+    {
+      title: 'Import',
+      items: [
+        {
+          content: 'Import from PDF',
+          onAction: () => console.log('Todo: implement PDF importing'),
+        },
+        {
+          content: 'Import from CSV',
+          onAction: () => console.log('Todo: implement CSV importing'),
+        },
+      ],
+    },
+    {
+      icon: DeleteIcon,
+      destructive: true,
+      content: 'Delete customers',
+      onAction: () => console.log('Todo: implement bulk delete'),
+    },
+  ];
 
   return (
     <Page>
       <TitleBar title="Additional page" />
       <Layout>
         <Layout.Section>
-          <DataTable
-            columnContentTypes={[
-              'text',
-              'text',
-              'text',
-              'text'
-            ]}
-            headings={[
-              'First name',
-              'Last name',
-              'Feedback',
-              'Date'
-            ]}
-            sortable={[false, false, false, true]}
-            rows={rows}
-            defaultSortDirection="descending"
-            onSort={handleSort}
-            initialSortColumnIndex={3}
-            footerContent={`Showing ${rows.length} of ${rows.length} results`}
-          >
-          </DataTable>
+          <Card>
+            <IndexTable
+              condensed={useBreakpoints().smDown}
+              resourceName={resourceName}
+              itemCount={feedbacks.length}
+              selectedItemsCount={
+                allResourcesSelected ? 'All' : selectedResources.length
+              }
+              onSelectionChange={handleSelectionChange}
+              headings={[
+                {title: 'First name'},
+                {title: 'Last name'},
+                {title: 'Feedback'},
+                {title: 'Date', alignment: 'end'},
+              ]}
+              bulkActions={bulkActions}
+              promotedBulkActions={promotedBulkActions}
+              emptyState={emptyStateMarkup}
+            >
+              {rowMarkup}
+            </IndexTable>
+          </Card>
         </Layout.Section>
         <Layout.Section variant="oneThird">
           <Card>

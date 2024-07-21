@@ -1,5 +1,5 @@
 import {
-  reactExtension, BlockStack, Text, BlockSpacer, Button, Form, Grid, GridItem, TextField, View, useInstructions, useDiscountCodes, useApplyDiscountCodeChange
+  reactExtension, BlockStack, Text, TextBlock, BlockSpacer, Button, Form, Grid, GridItem, TextField, View, useInstructions, useDiscountCodes, useApplyDiscountCodeChange, Link, Modal, useApi
 } from "@shopify/ui-extensions-react/checkout";
 import { useEffect, useState } from "react";
 
@@ -11,6 +11,7 @@ function FeedbackForm() {
   const applyDiscountChange = useApplyDiscountCodeChange();
   const discounts = useDiscountCodes();
   const instructions = useInstructions();
+  const { ui } = useApi();
 
   const [validationError, setValidationError] = useState('');
   const [formError, setFormError] = useState('');
@@ -39,66 +40,146 @@ function FeedbackForm() {
   //   )
   // }
 
-  return (
-    <Form
-      onSubmit={handleSubmit}
-    > 
-      <BlockStack inlineAlignment={"center"} padding={"base"}>
-        <Text appearance="info" emphasis="bold">Tell us how to do it better!</Text>
-      </BlockStack>
-      <Grid
-        columns={['50%', '50%']}
-        rows={['auto', 'auto']}
-        spacing="base"
-      >
-        <View>
-          <TextField
-            label="First name"
-            name="first_name"
-            value={firstName}
-            required={true}
-            onChange={handleFirstNameChange}
-            onInput={clearValidationErrors}
-            error={validationError}
-            disabled={loading}
-          />
-        </View>
-        <View>
-          <TextField
-            label="Last name (Optional)"
-            name="last_name"
-            value={lastName}
-            onChange={handleLastNameChange}
-          />
-        </View>
-        <GridItem columnSpan={2}>
-          <TextField 
-            label="Comment"
-            name="comment"
-            value={comment}
-            multiline={4}
-            required={true}
-            onChange={handleCommentChange}
-            onInput={clearValidationErrors}
-            error={validationError}
-            disabled={loading}
-          />
-        </GridItem>
-      </Grid>
+  // return (
+  //   <Form
+  //     onSubmit={handleSubmit}
+  //   > 
+  //     <BlockStack inlineAlignment={"center"} padding={"base"}>
+  //       <Text appearance="info" emphasis="bold">Tell us how to do it better!</Text>
+  //     </BlockStack>
+  //     <Grid
+  //       columns={['50%', '50%']}
+  //       rows={['auto', 'auto']}
+  //       spacing="base"
+  //     >
+  //       <View>
+  //         <TextField
+  //           label="First name"
+  //           name="first_name"
+  //           value={firstName}
+  //           required={true}
+  //           onChange={handleFirstNameChange}
+  //           onInput={clearValidationErrors}
+  //           error={validationError}
+  //           disabled={loading}
+  //         />
+  //       </View>
+  //       <View>
+  //         <TextField
+  //           label="Last name (Optional)"
+  //           name="last_name"
+  //           value={lastName}
+  //           onChange={handleLastNameChange}
+  //         />
+  //       </View>
+  //       <GridItem columnSpan={2}>
+  //         <TextField 
+  //           label="Comment"
+  //           name="comment"
+  //           value={comment}
+  //           multiline={4}
+  //           required={true}
+  //           onChange={handleCommentChange}
+  //           onInput={clearValidationErrors}
+  //           error={validationError}
+  //           disabled={loading}
+  //         />
+  //       </GridItem>
+  //     </Grid>
 
-      <BlockSpacer spacing="base" />
+  //     <BlockSpacer spacing="base" />
       
-      <Button 
-        accessibilityRole="submit"
-        loading={loading}
-        children={loading ? 'Submitting...' : 'Submit'}
-      />
+  //     <Button 
+  //       accessibilityRole="submit"
+  //       loading={loading}
+  //       children={loading ? 'Submitting...' : 'Submit'}
+  //     />
 
-      { formError && <Text appearance="critical">{formError}</Text> }
-      { formSuccess && <Text appearance="success">Feedback submitted successfully!</Text> }
+  //     { formError && <Text appearance="critical">{formError}</Text> }
+  //     { formSuccess && <Text appearance="success">Feedback submitted successfully!</Text> }
 
-    </Form>
-  );
+  //   </Form>
+  // );
+
+  return (
+    <Link
+      overlay={
+        <Modal
+          id="feedback-modal"
+          padding
+          title="Feedback Form"
+        >
+          <Form
+            onSubmit={handleSubmit}
+          > 
+            <BlockStack inlineAlignment={"center"} padding={"base"}>
+              <Text appearance="info" emphasis="bold">Tell us how to do it better!</Text>
+            </BlockStack>
+            <Grid
+              columns={['50%', '50%']}
+              rows={['auto', 'auto']}
+              spacing="base"
+            >
+              <View>
+                <TextField
+                  label="First name"
+                  name="first_name"
+                  value={firstName}
+                  required={true}
+                  onChange={handleFirstNameChange}
+                  onInput={clearValidationErrors}
+                  error={validationError}
+                  disabled={loading}
+                />
+              </View>
+              <View>
+                <TextField
+                  label="Last name (Optional)"
+                  name="last_name"
+                  value={lastName}
+                  onChange={handleLastNameChange}
+                />
+              </View>
+              <GridItem columnSpan={2}>
+                <TextField 
+                  label="Comment"
+                  name="comment"
+                  value={comment}
+                  multiline={4}
+                  required={true}
+                  onChange={handleCommentChange}
+                  onInput={clearValidationErrors}
+                  error={validationError}
+                  disabled={loading}
+                />
+              </GridItem>
+            </Grid>
+
+            <BlockSpacer spacing="base" />
+            
+            <Button 
+              accessibilityRole="submit"
+              loading={loading}
+              children={loading ? 'Submitting...' : 'Submit'}
+            />
+
+            { formError && <Text appearance="critical">{formError}</Text> }
+            { formSuccess && <Text appearance="success">Feedback submitted successfully!</Text> }
+
+          </Form>
+          <Button
+            onPress={() =>
+              ui.overlay.close('my-modal')
+            }
+          >
+            Submit
+          </Button>
+        </Modal>
+      }
+    >
+      Complete the feedback form
+    </Link>
+  )
 
   function handleFirstNameChange(value) {
     setFirstName(value);
@@ -129,7 +210,7 @@ function FeedbackForm() {
 
     try {
       setLoading(true);
-      response = await fetch('https://respondents-attraction-epson-contractor.trycloudflare.com/apps/customer-feedback', {
+      response = await fetch('https://billing-experienced-vt-domain.trycloudflare.com/apps/customer-feedback', {
         method: 'POST',
         headers: {
            'Content-Type': 'application/json',
