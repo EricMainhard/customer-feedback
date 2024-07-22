@@ -3,7 +3,7 @@
 client_id = "51a489a9dec1b6b7fdd4996085b06dac"
 name = "customer-feedback"
 handle = "customer-feedback-6"
-application_url = "https://billing-experienced-vt-domain.trycloudflare.com"
+application_url = "https://arising-dsl-terminal-mystery.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,16 +17,16 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "https://billing-experienced-vt-domain.trycloudflare.com/auth/callback",
-  "https://billing-experienced-vt-domain.trycloudflare.com/auth/shopify/callback",
-  "https://billing-experienced-vt-domain.trycloudflare.com/api/auth/callback"
+  "https://arising-dsl-terminal-mystery.trycloudflare.com/auth/callback",
+  "https://arising-dsl-terminal-mystery.trycloudflare.com/auth/shopify/callback",
+  "https://arising-dsl-terminal-mystery.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
 
 [app_proxy]
-url = "https://billing-experienced-vt-domain.trycloudflare.com/apps/customer-feedback"
+url = "https://arising-dsl-terminal-mystery.trycloudflare.com/apps/customer-feedback"
 subpath = "customer-feedback"
 prefix = "apps"
 

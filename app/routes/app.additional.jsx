@@ -6,23 +6,28 @@ import {
   Page,
   Text,
   BlockStack,
+  Form,
   useIndexResourceState,
   IndexTable,
   Badge,
   useBreakpoints,
-  EmptySearchResult
+  EmptySearchResult,
+  FormLayout,
+  DropZone,
+  Thumbnail,
+  Button
 } from "@shopify/polaris";
 import { DeleteIcon } from '@shopify/polaris-icons';
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useActionData, useSubmit } from "@remix-run/react";
 import { TitleBar } from "@shopify/app-bridge-react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useTransition } from "react";
 
 export const loader = async () => {
   let response;
   let feedbacks = [];
 
   try {
-    response = await fetch('https://billing-experienced-vt-domain.trycloudflare.com/apps/customer-feedback');
+    response = await fetch('https://arising-dsl-terminal-mystery.trycloudflare.com/apps/customer-feedback');
     feedbacks = await response.json();
     feedbacks = feedbacks?.feedbacks
   } catch (error) {
@@ -34,15 +39,23 @@ export const loader = async () => {
   };
 }
 
+export const action = async ({ request }) => {
+  console.log('.....Request:', request);
+};
+
 export default function AdditionalPage() {
 
   const { feedbacks } = useLoaderData();
+
+  const [file, setFile] = useState([]);
+  const submit = useSubmit();
 
   const resourceName = {
     singular: 'feedback',
     plural: 'feedbacks',
   };
 
+  
   const {selectedResources, allResourcesSelected, handleSelectionChange} = 
   useIndexResourceState(feedbacks);
 
@@ -53,6 +66,41 @@ export default function AdditionalPage() {
       withIllustration
     />
   );
+
+  const handleCSVImport = () => {
+    console.log('Todo: implement CSV import');
+    console.log('Files:', file);
+    const reader = new FileReader();
+    let result = reader.readAsText(file);
+    console.log('Result:', result);
+    //submit(files, { method: 'POST' });
+  }
+
+  const handleDropZoneClick = useCallback(
+    (_dropFile, acceptedFile, _rejectedFile) => {
+      setFile(acceptedFile[0]), []
+    },
+    [],
+  );
+  
+  const validFileTypes = ['.ms-excel', '.csv'];
+
+  const fileUpload = !file.length && (
+    <DropZone.FileUpload actionHint="Accepts .csv" />
+  );
+
+  const uploadedFile = file && (
+    <BlockStack>      
+      <Thumbnail
+        size="small"
+        alt={file.name}
+        source="https://cdn.shopify.com/s/files/1/0757/9955/files/New_Post.png"
+      />
+      <Text>{file.name}</Text>
+      <Badge>{file.size} bytes</Badge>
+    </BlockStack>
+  );
+
 
   const rowMarkup = feedbacks.map(
     (
@@ -74,53 +122,35 @@ export default function AdditionalPage() {
         <IndexTable.Cell>{feedback}</IndexTable.Cell>
         <IndexTable.Cell>
           <Text as="span" alignment="end" numeric>
-            {createdAt}
+            {new Date(createdAt).toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            })}
           </Text>
         </IndexTable.Cell>
       </IndexTable.Row>
     ),
   );
 
-  const promotedBulkActions = [
-    {
-      content: 'Create shipping labels',
-      onAction: () => console.log('Todo: implement create shipping labels'),
-    },
-    {
-      content: 'Mark as fulfilled',
-      onAction: () => console.log('Todo: implement mark as fulfilled'),
-    },
-    {
-      content: 'Capture payment',
-      onAction: () => console.log('Todo: implement capture payment'),
-    },
-  ];
   const bulkActions = [
     {
-      content: 'Add tags',
-      onAction: () => console.log('Todo: implement bulk add tags'),
+      content: 'Generate AI report',
+      onAction: () => console.log('Todo: implement bulk AI report'),
     },
     {
-      content: 'Remove tags',
-      onAction: () => console.log('Todo: implement bulk remove tags'),
-    },
-    {
-      title: 'Import',
+      title: 'Export',
       items: [
         {
-          content: 'Import from PDF',
-          onAction: () => console.log('Todo: implement PDF importing'),
-        },
-        {
-          content: 'Import from CSV',
-          onAction: () => console.log('Todo: implement CSV importing'),
-        },
+          content: 'Export as PDF',
+          onAction: () => console.log('Todo: implement CSV exporting'),
+        }
       ],
     },
     {
       icon: DeleteIcon,
       destructive: true,
-      content: 'Delete customers',
+      content: 'Delete feedbacks',
       onAction: () => console.log('Todo: implement bulk delete'),
     },
   ];
@@ -146,14 +176,27 @@ export default function AdditionalPage() {
                 {title: 'Date', alignment: 'end'},
               ]}
               bulkActions={bulkActions}
-              promotedBulkActions={promotedBulkActions}
               emptyState={emptyStateMarkup}
+              // loading
             >
               {rowMarkup}
             </IndexTable>
+            <Form onSubmit={handleCSVImport}>
+              <FormLayout>
+                <DropZone onDrop={handleDropZoneClick} type="file" allowMultiple={false}>
+                  {uploadedFile}
+                  {fileUpload}
+                </DropZone>
+                <Button
+                  primary
+                  submit
+                  disabled={file.length === 0}
+                >Import</Button>
+              </FormLayout>
+            </Form>
           </Card>
         </Layout.Section>
-        <Layout.Section variant="oneThird">
+        <Layout.Section>
           <Card>
             <BlockStack gap="200">
               <Text as="h2" variant="headingMd">
