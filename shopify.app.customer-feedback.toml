@@ -3,7 +3,7 @@
 client_id = "51a489a9dec1b6b7fdd4996085b06dac"
 name = "customer-feedback"
 handle = "customer-feedback-6"
-application_url = "https://runtime-providing-weeks-palmer.trycloudflare.com"
+application_url = "https://filled-enb-continuously-told.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,16 +17,16 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "https://runtime-providing-weeks-palmer.trycloudflare.com/auth/callback",
-  "https://runtime-providing-weeks-palmer.trycloudflare.com/auth/shopify/callback",
-  "https://runtime-providing-weeks-palmer.trycloudflare.com/api/auth/callback"
+  "https://filled-enb-continuously-told.trycloudflare.com/auth/callback",
+  "https://filled-enb-continuously-told.trycloudflare.com/auth/shopify/callback",
+  "https://filled-enb-continuously-told.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
 
 [app_proxy]
-url = "https://runtime-providing-weeks-palmer.trycloudflare.com/apps/customer-feedback"
+url = "https://filled-enb-continuously-told.trycloudflare.com/apps/customer-feedback"
 subpath = "customer-feedback"
 prefix = "apps"
 

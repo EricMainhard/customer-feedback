@@ -15,12 +15,12 @@ import {
   FormLayout,
   DropZone,
   Thumbnail,
-  Button
+  Button,
 } from "@shopify/polaris";
 import { DeleteIcon } from '@shopify/polaris-icons';
 import { useLoaderData, useActionData, useSubmit } from "@remix-run/react";
 import { TitleBar } from "@shopify/app-bridge-react";
-import { useState, useCallback, useEffect, useTransition } from "react";
+import { useState, useCallback } from "react";
 import Papa from 'papaparse';
 
 export const loader = async () => {
@@ -28,25 +28,46 @@ export const loader = async () => {
   let feedbacks = [];
 
   try {
-    response = await fetch('https://runtime-providing-weeks-palmer.trycloudflare.com/apps/customer-feedback');
+    response = await fetch('https://filled-enb-continuously-told.trycloudflare.com/apps/customer-feedback');
     feedbacks = await response.json();
-    feedbacks = feedbacks?.feedbacks
+    feedbacks = feedbacks?.feedbacks;
   } catch (error) {
     console.error('Failed to load feedbacks', error);
   }
 
   return {
-    feedbacks
+    feedbacks,
   };
-}
+};
 
 export const action = async ({ request }) => {
-  console.log('.....Request:', request);
+  try {
+    const formData = await request.json();
+    const response = await fetch('https://filled-enb-continuously-told.trycloudflare.com/apps/customer-feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData.results),
+    });
+    return new Response(JSON.stringify({ success: true }), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
+  } catch (error) {
+    return new Response('Failed to parse JSON', { status: 400 });
+  }
 };
 
 export default function AdditionalPage() {
-
   const { feedbacks } = useLoaderData();
+  const request = useActionData();
+
+  console.log('...request', request);
 
   const [file, setFile] = useState([]);
   const [results, setResults] = useState([]);
@@ -57,59 +78,59 @@ export default function AdditionalPage() {
     singular: 'feedback',
     plural: 'feedbacks',
   };
-  
-  const {selectedResources, allResourcesSelected, handleSelectionChange} = 
-  useIndexResourceState(feedbacks);
+
+  const { selectedResources, allResourcesSelected, handleSelectionChange } = useIndexResourceState(feedbacks);
 
   const emptyStateMarkup = (
     <EmptySearchResult
       title={'No feedbacks yet'}
-      description={'Customers feddback will appear here'}
+      description={'Customers feedback will appear here'}
       withIllustration
     />
   );
 
   const handleCSVImport = () => {
     const reader = new FileReader();
-    reader.onload = async function(e) {
+    reader.onload = async function (e) {
       try {
         const csvContent = e.target.result;
         const results = await parseCSV(csvContent);
         setResults(results);
+        submit({ results: results }, { method: "post", encType: "application/json" });
       } catch (error) {
         console.error('Failed to parse CSV', error);
       }
     };
-    
+
     reader.readAsText(file);
-  }
+  };
 
   const parseCSV = (csv) => {
     return new Promise((resolve, reject) => {
       Papa.parse(csv, {
         header: true,
         skipEmptyLines: true,
-        complete: function(results) {
-          if (results && results.data){
+        complete: function (results) {
+          if (results && results.data) {
             resolve(results.data);
           } else {
             reject(new Error('Failed to parse CSV'));
           }
         },
-        error: function(error) {
+        error: function (error) {
           reject(error);
-        }
-      })
-    })
+        },
+      });
+    });
   };
 
   const handleDropZoneClick = useCallback(
     (_dropFile, acceptedFile, _rejectedFile) => {
-      setFile(acceptedFile[0]), []
+      setFile(acceptedFile[0]), [];
     },
     [],
   );
-  
+
   const validFileTypes = ['.ms-excel', '.csv'];
 
   const fileUpload = !file.length && (
@@ -117,7 +138,7 @@ export default function AdditionalPage() {
   );
 
   const uploadedFile = file && (
-    <BlockStack>      
+    <BlockStack>
       <Thumbnail
         size="small"
         alt={file.name}
@@ -128,12 +149,8 @@ export default function AdditionalPage() {
     </BlockStack>
   );
 
-
   const rowMarkup = feedbacks.map(
-    (
-      {id, firstName, lastName, feedback, createdAt},
-      index,
-    ) => (
+    ({ id, firstName, lastName, feedback, createdAt }, index) => (
       <IndexTable.Row
         id={id}
         key={id}
@@ -171,7 +188,7 @@ export default function AdditionalPage() {
         {
           content: 'Export as PDF',
           onAction: () => console.log('Todo: implement CSV exporting'),
-        }
+        },
       ],
     },
     {
@@ -197,14 +214,14 @@ export default function AdditionalPage() {
               }
               onSelectionChange={handleSelectionChange}
               headings={[
-                {title: 'First name'},
-                {title: 'Last name'},
-                {title: 'Feedback'},
-                {title: 'Date', alignment: 'end'},
+                { title: 'First name' },
+                { title: 'Last name' },
+                { title: 'Feedback' },
+                { title: 'Date', alignment: 'end' },
               ]}
               bulkActions={bulkActions}
               emptyState={emptyStateMarkup}
-              // loading
+            // loading
             >
               {rowMarkup}
             </IndexTable>
