@@ -68,7 +68,7 @@ function FeedbackForm() {
 
     setLoading(true);
     try {
-      const response = await fetch('https://arising-dsl-terminal-mystery.trycloudflare.com/apps/customer-feedback', {
+      const response = await fetch('https://runtime-providing-weeks-palmer.trycloudflare.com/apps/customer-feedback', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

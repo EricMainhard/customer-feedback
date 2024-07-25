@@ -21,13 +21,14 @@ import { DeleteIcon } from '@shopify/polaris-icons';
 import { useLoaderData, useActionData, useSubmit } from "@remix-run/react";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { useState, useCallback, useEffect, useTransition } from "react";
+import Papa from 'papaparse';
 
 export const loader = async () => {
   let response;
   let feedbacks = [];
 
   try {
-    response = await fetch('https://arising-dsl-terminal-mystery.trycloudflare.com/apps/customer-feedback');
+    response = await fetch('https://runtime-providing-weeks-palmer.trycloudflare.com/apps/customer-feedback');
     feedbacks = await response.json();
     feedbacks = feedbacks?.feedbacks
   } catch (error) {
@@ -48,13 +49,14 @@ export default function AdditionalPage() {
   const { feedbacks } = useLoaderData();
 
   const [file, setFile] = useState([]);
+  const [results, setResults] = useState([]);
+
   const submit = useSubmit();
 
   const resourceName = {
     singular: 'feedback',
     plural: 'feedbacks',
   };
-
   
   const {selectedResources, allResourcesSelected, handleSelectionChange} = 
   useIndexResourceState(feedbacks);
@@ -68,13 +70,38 @@ export default function AdditionalPage() {
   );
 
   const handleCSVImport = () => {
-    console.log('Todo: implement CSV import');
-    console.log('Files:', file);
     const reader = new FileReader();
-    let result = reader.readAsText(file);
-    console.log('Result:', result);
-    //submit(files, { method: 'POST' });
+    reader.onload = async function(e) {
+      try {
+        const csvContent = e.target.result;
+        const results = await parseCSV(csvContent);
+        setResults(results);
+      } catch (error) {
+        console.error('Failed to parse CSV', error);
+      }
+    };
+    
+    reader.readAsText(file);
   }
+
+  const parseCSV = (csv) => {
+    return new Promise((resolve, reject) => {
+      Papa.parse(csv, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          if (results && results.data){
+            resolve(results.data);
+          } else {
+            reject(new Error('Failed to parse CSV'));
+          }
+        },
+        error: function(error) {
+          reject(error);
+        }
+      })
+    })
+  };
 
   const handleDropZoneClick = useCallback(
     (_dropFile, acceptedFile, _rejectedFile) => {
