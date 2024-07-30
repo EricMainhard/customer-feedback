@@ -28,7 +28,7 @@ export const loader = async () => {
   let feedbacks = [];
 
   try {
-    response = await fetch('https://filled-enb-continuously-told.trycloudflare.com/apps/customer-feedback');
+    response = await fetch('https://deposits-scheduled-us-philippines.trycloudflare.com/auth/callback');
     feedbacks = await response.json();
     feedbacks = feedbacks?.feedbacks;
   } catch (error) {
@@ -43,7 +43,7 @@ export const loader = async () => {
 export const action = async ({ request }) => {
   try {
     const formData = await request.json();
-    const response = await fetch('https://filled-enb-continuously-told.trycloudflare.com/apps/customer-feedback', {
+    const response = await fetch('https://deposits-scheduled-us-philippines.trycloudflare.com/auth/callback', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

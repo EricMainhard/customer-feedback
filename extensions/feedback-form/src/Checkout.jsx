@@ -68,7 +68,7 @@ function FeedbackForm() {
 
     setLoading(true);
     try {
-      const response = await fetch('https://filled-enb-continuously-told.trycloudflare.com/apps/customer-feedback', {
+      const response = await fetch('https://deposits-scheduled-us-philippines.trycloudflare.com/auth/callback', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
