@@ -68,7 +68,7 @@ function FeedbackForm() {
 
     setLoading(true);
     try {
-      const response = await fetch('https://deposits-scheduled-us-philippines.trycloudflare.com/auth/callback', {
+      const response = await fetch('https://honduras-stores-ensure-appreciation.trycloudflare.com/apps/feedback-validation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,12 @@ function FeedbackForm() {
 
       setLoading(false);
 
-      if (response.ok) {
+      if (response.ok){
+        let res = await response.json();
+        console.log(res);
+      }
+
+      /*if (response.ok) {
         setFormSuccess(true);
         if (modal) {
           ui.overlay.close('feedback-modal');
@@ -88,7 +93,7 @@ function FeedbackForm() {
         setIsFormVisible(false);
       } else {
         setFormError('Failed to submit feedback');
-      }
+      }*/
     } catch (error) {
       console.error('Failed to submit feedback', error);
       setFormError('Failed to submit feedback');

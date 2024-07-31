@@ -1,21 +1,5 @@
 import {
-  Card,
-  Layout,
-  Link,
-  List,
-  Page,
-  Text,
-  BlockStack,
-  Form,
-  useIndexResourceState,
-  IndexTable,
-  Badge,
-  useBreakpoints,
-  EmptySearchResult,
-  FormLayout,
-  DropZone,
-  Thumbnail,
-  Button,
+  Card, Layout, Link, List, Page, Text, BlockStack, Form, useIndexResourceState, IndexTable, Badge, useBreakpoints, EmptySearchResult, FormLayout, DropZone, Thumbnail, Button,
 } from "@shopify/polaris";
 import { DeleteIcon } from '@shopify/polaris-icons';
 import { useLoaderData, useActionData, useSubmit } from "@remix-run/react";
@@ -28,7 +12,7 @@ export const loader = async () => {
   let feedbacks = [];
 
   try {
-    response = await fetch('https://deposits-scheduled-us-philippines.trycloudflare.com/auth/callback');
+    response = await fetch('https://honduras-stores-ensure-appreciation.trycloudflare.com/apps/customer-feedback');
     feedbacks = await response.json();
     feedbacks = feedbacks?.feedbacks;
   } catch (error) {
@@ -43,7 +27,7 @@ export const loader = async () => {
 export const action = async ({ request }) => {
   try {
     const formData = await request.json();
-    const response = await fetch('https://deposits-scheduled-us-philippines.trycloudflare.com/auth/callback', {
+    const response = await fetch('https://honduras-stores-ensure-appreciation.trycloudflare.com/apps/customer-feedback', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -66,8 +50,6 @@ export const action = async ({ request }) => {
 export default function AdditionalPage() {
   const { feedbacks } = useLoaderData();
   const request = useActionData();
-
-  console.log('...request', request);
 
   const [file, setFile] = useState([]);
   const [results, setResults] = useState([]);

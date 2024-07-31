@@ -3,7 +3,7 @@
 client_id = "51a489a9dec1b6b7fdd4996085b06dac"
 name = "customer-feedback"
 handle = "customer-feedback-6"
-application_url = "https://computed-minimum-supreme-seeking.trycloudflare.com"
+application_url = "https://honduras-stores-ensure-appreciation.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,16 +17,16 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "https://computed-minimum-supreme-seeking.trycloudflare.com/auth/callback",
-  "https://computed-minimum-supreme-seeking.trycloudflare.com/auth/shopify/callback",
-  "https://computed-minimum-supreme-seeking.trycloudflare.com/api/auth/callback"
+  "https://honduras-stores-ensure-appreciation.trycloudflare.com/auth/callback",
+  "https://honduras-stores-ensure-appreciation.trycloudflare.com/auth/shopify/callback",
+  "https://honduras-stores-ensure-appreciation.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
 
 [app_proxy]
-url = "https://computed-minimum-supreme-seeking.trycloudflare.com/apps/customer-feedback"
+url = "https://honduras-stores-ensure-appreciation.trycloudflare.com/apps/customer-feedback"
 subpath = "customer-feedback"
 prefix = "apps"
 
