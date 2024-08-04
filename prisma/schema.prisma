@@ -37,4 +37,5 @@ model Feedback {
   lastName  String?
   feedback  String?
   createdAt DateTime @default(now())
+  rating    Int?     @default(1)
 }

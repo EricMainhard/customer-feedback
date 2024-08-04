@@ -68,7 +68,7 @@ function FeedbackForm() {
 
     setLoading(true);
     try {
-      const response = await fetch('https://honduras-stores-ensure-appreciation.trycloudflare.com/apps/feedback-validation', {
+      const response = await fetch('https://leather-clients-dp-snap.trycloudflare.com/apps/feedback-validation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

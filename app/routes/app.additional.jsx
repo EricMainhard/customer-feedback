@@ -1,18 +1,21 @@
 import {
-  Card, Layout, Link, List, Page, Text, BlockStack, Form, useIndexResourceState, IndexTable, Badge, useBreakpoints, EmptySearchResult, FormLayout, DropZone, Thumbnail, Button,
+  Card, Layout, Link, List, Page, Text, BlockStack, Form, useIndexResourceState, IndexTable, Badge, useBreakpoints, EmptySearchResult, FormLayout, DropZone, Thumbnail, Toast,
+  TextField,
+  Button
 } from "@shopify/polaris";
 import { DeleteIcon } from '@shopify/polaris-icons';
 import { useLoaderData, useActionData, useSubmit } from "@remix-run/react";
-import { TitleBar } from "@shopify/app-bridge-react";
-import { useState, useCallback } from "react";
+import { TitleBar, Modal } from "@shopify/app-bridge-react";
+import { useState, useCallback, useEffect } from "react";
 import Papa from 'papaparse';
+import emailjs from '@emailjs/browser';
 
 export const loader = async () => {
   let response;
   let feedbacks = [];
 
   try {
-    response = await fetch('https://honduras-stores-ensure-appreciation.trycloudflare.com/apps/customer-feedback');
+    response = await fetch('https://leather-clients-dp-snap.trycloudflare.com/apps/customer-feedback');
     feedbacks = await response.json();
     feedbacks = feedbacks?.feedbacks;
   } catch (error) {
@@ -20,14 +23,14 @@ export const loader = async () => {
   }
 
   return {
-    feedbacks,
+    feedbacks
   };
 };
 
 export const action = async ({ request }) => {
   try {
     const formData = await request.json();
-    const response = await fetch('https://honduras-stores-ensure-appreciation.trycloudflare.com/apps/customer-feedback', {
+    const response = await fetch('https://leather-clients-dp-snap.trycloudflare.com/apps/customer-feedback', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -53,6 +56,10 @@ export default function AdditionalPage() {
 
   const [file, setFile] = useState([]);
   const [results, setResults] = useState([]);
+  const [croEmail, setCroEmail] = useState('admin@dtcpages.com');
+  const [croSubject, setCroSubject] = useState('CRO Report');
+  const [croNotes, setCroNotes] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
 
   const submit = useSubmit();
 
@@ -132,7 +139,7 @@ export default function AdditionalPage() {
   );
 
   const rowMarkup = feedbacks.map(
-    ({ id, firstName, lastName, feedback, createdAt }, index) => (
+    ({ id, firstName, lastName, feedback, createdAt, rating }, index) => (
       <IndexTable.Row
         id={id}
         key={id}
@@ -155,6 +162,7 @@ export default function AdditionalPage() {
             })}
           </Text>
         </IndexTable.Cell>
+        <IndexTable.Cell>{rating}</IndexTable.Cell>
       </IndexTable.Row>
     ),
   );
@@ -163,6 +171,10 @@ export default function AdditionalPage() {
     {
       content: 'Generate AI report',
       onAction: () => console.log('Todo: implement bulk AI report'),
+    },
+    {
+      content: 'Professional CRO Report',
+      onAction: () => shopify.modal.show('cro-email'),
     },
     {
       title: 'Export',
@@ -187,39 +199,34 @@ export default function AdditionalPage() {
       <Layout>
         <Layout.Section>
           <Card>
-            <IndexTable
-              condensed={useBreakpoints().smDown}
-              resourceName={resourceName}
-              itemCount={feedbacks.length}
-              selectedItemsCount={
-                allResourcesSelected ? 'All' : selectedResources.length
-              }
-              onSelectionChange={handleSelectionChange}
-              headings={[
-                { title: 'First name' },
-                { title: 'Last name' },
-                { title: 'Feedback' },
-                { title: 'Date', alignment: 'end' },
-              ]}
-              bulkActions={bulkActions}
-              emptyState={emptyStateMarkup}
-            // loading
-            >
-              {rowMarkup}
-            </IndexTable>
-            <Form onSubmit={handleCSVImport}>
-              <FormLayout>
-                <DropZone onDrop={handleDropZoneClick} type="file" allowMultiple={false}>
-                  {uploadedFile}
-                  {fileUpload}
-                </DropZone>
-                <Button
-                  primary
-                  submit
-                  disabled={file.length === 0}
-                >Import</Button>
-              </FormLayout>
-            </Form>
+            <BlockStack gap="500">
+              <IndexTable
+                condensed={useBreakpoints().smDown}
+                resourceName={resourceName}
+                itemCount={feedbacks.length}
+                selectedItemsCount={
+                  allResourcesSelected ? 'All' : selectedResources.length
+                }
+                onSelectionChange={handleSelectionChange}
+                headings={[
+                  { title: 'First name' },
+                  { title: 'Last name' },
+                  { title: 'Feedback' },
+                  { title: 'Date', alignment: 'end' },
+                  { title: 'Rating', alignment: 'center' }
+                ]}
+                bulkActions={bulkActions}
+                emptyState={emptyStateMarkup}
+              // loading
+              >
+                {rowMarkup}
+              </IndexTable>
+            
+              <DropZone onDrop={handleCSVImport} type="file" allowMultiple={false} variableHeight>
+                <DropZone.FileUpload actionTitle="Import Feedback" actionHint=".CSV files only"/>
+              </DropZone>
+            </BlockStack>
+            
           </Card>
         </Layout.Section>
         <Layout.Section>
@@ -243,6 +250,47 @@ export default function AdditionalPage() {
           </Card>
         </Layout.Section>
       </Layout>
+      <Modal id="cro-email" variant="base">
+        <TitleBar title="Contact our CRO Team"/>
+        <Form>
+          <FormLayout>
+            <TextField
+              type="email"
+              value={croEmail}
+              label="To"
+              disabled
+              size="slim"
+            />
+            <TextField
+              label="From"
+              type="email"
+              tone="magic"
+              value={clientEmail}
+              onChange={(value) => setClientEmail(value)}
+            />
+            <TextField
+              label="Subject"
+              type="text"
+              value={croSubject}
+              onChange={(value) => setCroSubject(value)}
+            />
+            <TextField 
+              label="Additional notes"
+              type="text"
+              multiline
+              spellCheck
+              value={croNotes}
+              onChange={(value) => setCroNotes(value)}
+            />
+            <Button
+              submit
+              fullWidth
+            >
+              Send
+            </Button>
+          </FormLayout>
+        </Form>
+      </Modal>
     </Page>
   );
 }
